@@ -1,7 +1,7 @@
 """
 Агент для просмотра записей клиента
 """
-from .tools.client_records_tools import GetClientRecords
+from .tools.service_tools import GetServices
 from .tools.call_manager_tools import CallManager
 from .base_agent import BaseAgent
 from ..services.langgraph_service import LangGraphService
@@ -22,7 +22,7 @@ class ViewMyBookingAgent(BaseAgent):
 
 # ИНСТРУКЦИИ ДЛЯ СТАДИИ VIEW_MY_BOOKING
 
-Предоставь информацию клиенту о том, какие записи у него есть. Используй GetClientRecords. Для использования уточни номер телефона клиента если не знаешь его из истории переписки
+Предоставь информацию клиенту о том, какие записи у него есть. Используй GetServices для получения информации об услугах. Для использования уточни номер телефона клиента если не знаешь его из истории переписки
 Не предлагай отменить или перенести запись.  Просто дай информацию.
 
 Не вставляй {Имя клиента} если ты не знаешь настоящего имени клиента. Не указывай продолжительность процедуры.
@@ -46,7 +46,7 @@ class ViewMyBookingAgent(BaseAgent):
         super().__init__(
             langgraph_service=langgraph_service,
             instruction=instruction,
-            tools=[GetClientRecords, CallManager],
+            tools=[GetServices, CallManager],
             agent_name="Агент просмотра записей"
         )
 

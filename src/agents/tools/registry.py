@@ -21,35 +21,13 @@ class ToolsRegistry:
         """Загружает все инструменты из модулей."""
         try:
             # Импортируем все инструменты из __init__.py
-            from .service_tools import (
-                GetCategories,
-                GetServices,
-                FindSlots,
-                CreateBooking,
-                ViewService,
-                FindMasterByService
-            )
-            from .client_records_tools import GetClientRecords
-            from .cancel_booking_tools import CancelBooking
-            from .reschedule_booking_tools import RescheduleBooking
+            from .service_tools import GetServices
             from .call_manager_tools import CallManager
-            from .about_salon_tools import AboutSalon
-            from .masters_tools import Masters
             
             # Регистрируем все инструменты
             tools_list = [
-                GetCategories,
                 GetServices,
-                FindSlots,
-                CreateBooking,
-                ViewService,
-                FindMasterByService,
-                GetClientRecords,
-                CancelBooking,
-                RescheduleBooking,
                 CallManager,
-                AboutSalon,
-                Masters,
             ]
             
             for tool_class in tools_list:

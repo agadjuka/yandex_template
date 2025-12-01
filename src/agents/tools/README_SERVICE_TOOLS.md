@@ -2,27 +2,10 @@
 
 ## Описание
 
-Два инструмента для работы с каталогом услуг:
-- `GetCategories` - получение списка всех категорий услуг
+Инструмент для работы с каталогом услуг:
 - `GetServices` - получение списка услуг указанной категории
 
 ## Использование
-
-### GetCategories
-
-Простой вызов без параметров. Возвращает список всех категорий с их ID.
-
-**Пример использования:**
-```
-Агент вызывает: GetCategories()
-Результат:
-Доступные категории услуг:
-
-1. Маникюр
-2. Педикюр
-3. Услуги для мужчин
-...
-```
 
 ### GetServices
 
@@ -48,37 +31,30 @@
 **Переменные окружения (опционально):**
 ```env
 SERVICES_DATA_SOURCE=file
-SERVICES_FILE_PATH=services.json
+SERVICES_DATA_PATH=services.json
 ```
 
-### Чтение из Object Storage
-
-Для использования облачного хранилища:
+### Чтение из YDB (альтернативный вариант)
 
 **Переменные окружения:**
 ```env
-SERVICES_DATA_SOURCE=storage
-YC_BUCKET_NAME=your-bucket-name
-SERVICES_STORAGE_PATH=services.json
-YC_ACCESS_KEY_ID=your_access_key
-YC_SECRET_ACCESS_KEY=your_secret_key
+SERVICES_DATA_SOURCE=ydb
+YDB_ENDPOINT=grpc://ydb.serverless.yandexcloud.net:2135
+YDB_DATABASE=/ru-central1/b1g...
+YDB_TABLE_NAME=services
 ```
 
-**Установка зависимостей:**
-```bash
-pip install boto3
-```
+## Структура данных
 
-## Структура файла services.json
+Данные должны быть в формате JSON со следующей структурой:
 
 ```json
 {
   "1": {
     "category_name": "Маникюр",
-    "has_master_levels": true,
     "services": [
       {
-        "id": 16659735,
+        "id": 123,
         "name": "МАНИКЮР+ПОКРЫТИЕ ГЕЛЬ-ЛАК",
         "prices": "2600",
         "master_level": "Мастер"
@@ -88,13 +64,18 @@ pip install boto3
 }
 ```
 
-## Кэширование
+## Доступные категории
 
-Данные автоматически кэшируются после первой загрузки для повышения производительности. 
-Для принудительной перезагрузки данных (например, после обновления файла) используйте:
-
-```python
-from src.agents.tools.services_data_loader import _data_loader
-_data_loader.reload()
-```
-
+- '1' - Маникюр
+- '2' - Педикюр
+- '3' - Услуги для мужчин
+- '4' - Брови
+- '5' - Ресницы
+- '6' - Макияж
+- '7' - Парикмахерские услуги
+- '8' - Пирсинг
+- '9' - Лазерная эпиляция
+- '10' - Косметология
+- '11' - Депиляция
+- '12' - Массаж
+- '13' - LOOKTOWN SPA
