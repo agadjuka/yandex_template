@@ -246,30 +246,6 @@ agent_names = {
 }
 ```
 
-### Шаг 8: Обновление playground.py (опционально)
-
-Если используете playground для тестирования, обновите:
-
-1. Добавьте в `agent_map`:
-```python
-agent_map = {
-    "GreetingAgent": getattr(st.session_state.main_graph, 'greeting_agent', None),
-    "ViewMyBookingAgent": getattr(st.session_state.main_graph, 'view_my_booking_agent', None),
-    "YourAgent": getattr(st.session_state.main_graph, 'your_agent', None),  # Добавьте здесь
-}
-```
-
-2. Добавьте проверку наличия агента:
-```python
-if hasattr(st.session_state.main_graph, 'your_agent'):
-    agents_list.append("YourAgent")
-```
-
-3. Обновите дефолтный список:
-```python
-agents_list = ["StageDetectorAgent", "GreetingAgent", "ViewMyBookingAgent", "YourAgent"]
-```
-
 ---
 
 ## Удаление агента
@@ -312,10 +288,6 @@ agents_list = ["StageDetectorAgent", "GreetingAgent", "ViewMyBookingAgent", "You
 
 Откройте `src/agents/stage_descriptions.json` и удалите описание стадии.
 
-### Шаг 8: Очистка playground.py (если использовался)
-
-Удалите все упоминания агента из `playground.py`.
-
 ---
 
 ## Чеклист при создании агента
@@ -335,7 +307,6 @@ agents_list = ["StageDetectorAgent", "GreetingAgent", "ViewMyBookingAgent", "You
 - [ ] Добавлен экспорт в `__init__.py`
 - [ ] Добавлена запись в `registry.py`
 - [ ] Добавлено описание в `stage_descriptions.json`
-- [ ] Обновлен `playground.py` (если используется)
 
 ## Чеклист при удалении агента
 
@@ -354,7 +325,6 @@ agents_list = ["StageDetectorAgent", "GreetingAgent", "ViewMyBookingAgent", "You
 - [ ] Удален экспорт из `__init__.py`
 - [ ] Удалена запись из `registry.py`
 - [ ] Удалено описание из `stage_descriptions.json`
-- [ ] Очищен `playground.py` (если использовался)
 
 ---
 
