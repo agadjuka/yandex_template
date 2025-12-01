@@ -191,9 +191,7 @@ with chat_container:
                 if "stage" in message["metadata"] and message["metadata"]["stage"]:
                     stage_emoji = {
                         "greeting": "👋",
-                        "booking": "📅",
-                        "cancel_booking": "❌",
-                        "reschedule": "🔄",
+                        "view_my_booking": "📋",
                         "salon_info": "ℹ️",
                         "general": "💬",
                         "unknown": "❓"
@@ -306,9 +304,7 @@ if user_input:
                 if detected_stage:
                     stage_emoji = {
                         "greeting": "👋",
-                        "booking": "📅",
-                        "cancel_booking": "❌",
-                        "reschedule": "🔄",
+                        "view_my_booking": "📋",
                         "salon_info": "ℹ️",
                         "general": "💬",
                         "unknown": "❓"
@@ -337,12 +333,7 @@ if user_input:
                     # Альтернативный способ получения tool_calls из графа
                     agent_map = {
                         "GreetingAgent": getattr(st.session_state.main_graph, 'greeting_agent', None),
-                        "BookingAgent": getattr(st.session_state.main_graph, 'booking_agent', None),
-                        "BookingToMasterAgent": getattr(st.session_state.main_graph, 'booking_to_master_agent', None),
-                        "CancelBookingAgent": getattr(st.session_state.main_graph, 'cancel_agent', None),
-                        "RescheduleAgent": getattr(st.session_state.main_graph, 'reschedule_agent', None),
                         "ViewMyBookingAgent": getattr(st.session_state.main_graph, 'view_my_booking_agent', None),
-                        "InformationGatheringAgent": getattr(st.session_state.main_graph, 'information_gathering_agent', None),
                     }
                     agent = agent_map.get(agent_name)
                     if agent and hasattr(agent, '_last_tool_calls') and agent._last_tool_calls:
@@ -498,23 +489,17 @@ try:
         agents_list.append("StageDetectorAgent")
         if hasattr(st.session_state.main_graph, 'greeting_agent'):
             agents_list.append("GreetingAgent")
-        if hasattr(st.session_state.main_graph, 'booking_agent'):
-            agents_list.append("BookingAgent")
-        if hasattr(st.session_state.main_graph, 'cancel_agent'):
-            agents_list.append("CancelBookingAgent")
-        if hasattr(st.session_state.main_graph, 'reschedule_agent'):
-            agents_list.append("RescheduleAgent")
-        if hasattr(st.session_state.main_graph, 'salon_info_agent'):
-            agents_list.append("SalonInfoAgent")
+        if hasattr(st.session_state.main_graph, 'view_my_booking_agent'):
+            agents_list.append("ViewMyBookingAgent")
     
     # Если список пустой, используем дефолтный
     if not agents_list:
-        agents_list = ["StageDetectorAgent", "GreetingAgent", "BookingAgent", "CancelBookingAgent", "RescheduleAgent"]
+        agents_list = ["StageDetectorAgent", "GreetingAgent", "ViewMyBookingAgent"]
     
     agents_text = ", ".join([f"`{agent}`" for agent in agents_list])
 except Exception:
     # Fallback к дефолтному списку
-    agents_text = "`StageDetectorAgent`, `GreetingAgent`, `BookingAgent`, `CancelBookingAgent`, `RescheduleAgent`"
+    agents_text = "`StageDetectorAgent`, `GreetingAgent`, `ViewMyBookingAgent`"
 
 st.markdown(f"""
 ### 📝 Информация

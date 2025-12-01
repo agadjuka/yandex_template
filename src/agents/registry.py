@@ -28,11 +28,6 @@ class AgentRegistry:
         # Маппинг ключей агентов на читаемые имена
         agent_names = {
             'greeting_agent': 'Приветствие',
-            'information_gathering_agent': 'Сбор информации',
-            'booking_agent': 'Бронирование',
-            'booking_to_master_agent': 'Бронирование к мастеру',
-            'cancel_booking_agent': 'Отмена записи',
-            'reschedule_agent': 'Перенесение записи',
             'view_my_booking_agent': 'Просмотр моей записи',
         }
         
