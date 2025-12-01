@@ -27,8 +27,8 @@ class AgentRegistry:
         
         # Маппинг ключей агентов на читаемые имена
         agent_names = {
-            'greeting_agent': 'Приветствие',
-            'view_my_booking_agent': 'Просмотр моей записи',
+            'morning_agent': 'Утренний агент',
+            'evening_agent': 'Вечерний агент',
         }
         
         # Находим все файлы агентов

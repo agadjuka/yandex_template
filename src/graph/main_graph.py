@@ -5,8 +5,8 @@ from typing import Literal
 from langgraph.graph import StateGraph, START, END
 from .conversation_state import ConversationState
 from ..agents.stage_detector_agent import StageDetectorAgent
-from ..agents.greeting_agent import GreetingAgent
-from ..agents.view_my_booking_agent import ViewMyBookingAgent
+from ..agents.morning_agent import MorningAgent
+from ..agents.evening_agent import EveningAgent
 
 from ..services.langgraph_service import LangGraphService
 from ..services.logger_service import logger
@@ -33,15 +33,15 @@ class MainGraph:
             # Создаём агентов только если их ещё нет в кэше
             MainGraph._agents_cache[cache_key] = {
                 'stage_detector': StageDetectorAgent(langgraph_service),
-                'greeting': GreetingAgent(langgraph_service),
-                'view_my_booking': ViewMyBookingAgent(langgraph_service),
+                'morning': MorningAgent(langgraph_service),
+                'evening': EveningAgent(langgraph_service),
             }
         
         # Используем агентов из кэша
         agents = MainGraph._agents_cache[cache_key]
         self.stage_detector = agents['stage_detector']
-        self.greeting_agent = agents['greeting']
-        self.view_my_booking_agent = agents['view_my_booking']
+        self.morning_agent = agents['morning']
+        self.evening_agent = agents['evening']
         
         # Создаём граф
         self.graph = self._create_graph()
@@ -53,8 +53,8 @@ class MainGraph:
         
         # Добавляем узлы
         graph.add_node("detect_stage", self._detect_stage)
-        graph.add_node("handle_greeting", self._handle_greeting)
-        graph.add_node("handle_view_my_booking", self._handle_view_my_booking)
+        graph.add_node("handle_morning", self._handle_morning)
+        graph.add_node("handle_evening", self._handle_evening)
         
         # Добавляем рёбра
         graph.add_edge(START, "detect_stage")
@@ -62,13 +62,13 @@ class MainGraph:
             "detect_stage",
             self._route_after_detect,
             {
-                "greeting": "handle_greeting",
-                "view_my_booking": "handle_view_my_booking",
+                "morning": "handle_morning",
+                "evening": "handle_evening",
                 "end": END
             }
         )
-        graph.add_edge("handle_greeting", END)
-        graph.add_edge("handle_view_my_booking", END)
+        graph.add_edge("handle_morning", END)
+        graph.add_edge("handle_evening", END)
         return graph
     
     def _detect_stage(self, state: ConversationState) -> ConversationState:
@@ -100,7 +100,7 @@ class MainGraph:
         }
     
     def _route_after_detect(self, state: ConversationState) -> Literal[
-        "greeting", "view_my_booking", "end"
+        "morning", "evening", "end"
     ]:
         """Маршрутизация после определения стадии"""
         # Если CallManager был вызван, завершаем граф
@@ -109,17 +109,17 @@ class MainGraph:
             return "end"
         
         # Иначе маршрутизируем по стадии
-        stage = state.get("stage", "greeting")
+        stage = state.get("stage", "morning")
         logger.info(f"Маршрутизация на стадию: {stage}")
         
         # Валидация стадии
         valid_stages = [
-            "greeting", "view_my_booking"
+            "morning", "evening"
         ]
         
         if stage not in valid_stages:
-            logger.warning(f"⚠️ Неизвестная стадия: {stage}, устанавливаю greeting")
-            return "greeting"
+            logger.warning(f"⚠️ Неизвестная стадия: {stage}, устанавливаю morning")
+            return "morning"
         
         return stage
     
@@ -172,23 +172,23 @@ class MainGraph:
             "response_id": response_id
         }
     
-    def _handle_greeting(self, state: ConversationState) -> ConversationState:
-        """Обработка приветствия"""
-        logger.info("Обработка приветствия")
+    def _handle_morning(self, state: ConversationState) -> ConversationState:
+        """Обработка утреннего приветствия"""
+        logger.info("Обработка утреннего приветствия")
         message = state["message"]
         previous_response_id = state.get("previous_response_id")
         chat_id = state.get("chat_id")
         
-        agent_result = self.greeting_agent(message, previous_response_id, chat_id=chat_id)
-        return self._process_agent_result(self.greeting_agent, agent_result, state, "GreetingAgent")
+        agent_result = self.morning_agent(message, previous_response_id, chat_id=chat_id)
+        return self._process_agent_result(self.morning_agent, agent_result, state, "MorningAgent")
     
-    def _handle_view_my_booking(self, state: ConversationState) -> ConversationState:
-        """Обработка просмотра записей"""
-        logger.info("Обработка просмотра записей")
+    def _handle_evening(self, state: ConversationState) -> ConversationState:
+        """Обработка вечернего приветствия"""
+        logger.info("Обработка вечернего приветствия")
         message = state["message"]
         previous_response_id = state.get("previous_response_id")
         chat_id = state.get("chat_id")
         
-        agent_result = self.view_my_booking_agent(message, previous_response_id, chat_id=chat_id)
-        return self._process_agent_result(self.view_my_booking_agent, agent_result, state, "ViewMyBookingAgent")
+        agent_result = self.evening_agent(message, previous_response_id, chat_id=chat_id)
+        return self._process_agent_result(self.evening_agent, agent_result, state, "EveningAgent")
 

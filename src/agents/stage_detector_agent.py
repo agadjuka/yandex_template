@@ -23,16 +23,13 @@ class StageDetectorAgent(BaseAgent):
     """Агент для определения стадии диалога"""
     
     def __init__(self, langgraph_service: LangGraphService):
-        instruction = """Прочитай последнее сообщение клиента и ознакомься с историей переписки. Определи, какая стадия диалога подходит больше всего. Учитывай историю переписки если идёт непрерывный процесс. Но последнее сообщение ключевое, человек может начать говорить на другую тему, тогда используй другую стадию.
+        instruction = """**СПИСОК СТАДИЙ:**
 
-
-**СПИСОК СТАДИЙ:**
-
-- greeting: Клиент только начинает диалог, здоровается или пишет впервые за долгое время.
-- view_my_booking: Клиент хочет посмотреть свои предстоящие записи ("на когда я записан?", "какие у меня записи?").
+- morning: Если в сообщении есть цифра от 0 до 10 (включительно).
+- evening: Если в сообщении есть цифра от 11 до 20 (включительно).
 
 Верни ТОЛЬКО одно слово - название стадии. 
-ИСКЛЮЧЕНИЕ: используй инструмент CallManager, если клиент явно просит позвать менеджера либо ругается."""
+"""
         
         super().__init__(
             langgraph_service=langgraph_service,
@@ -53,7 +50,7 @@ class StageDetectorAgent(BaseAgent):
         # Если CallManager был вызван, BaseAgent вернет "[CALL_MANAGER_RESULT]"
         if response == "[CALL_MANAGER_RESULT]":
             logger.info("CallManager был вызван в StageDetectorAgent")
-            return StageDetection(stage=DialogueStage.GREETING.value)
+            return StageDetection(stage=DialogueStage.MORNING.value)
         
         # Парсим ответ
         detection = self._parse_response(response)
@@ -62,9 +59,9 @@ class StageDetectorAgent(BaseAgent):
         
         # Валидируем стадию
         if detection.stage not in [stage.value for stage in DialogueStage]:
-            logger.warning(f"Неизвестная стадия: {detection.stage}, устанавливаю greeting")
+            logger.warning(f"Неизвестная стадия: {detection.stage}, устанавливаю morning")
             logger.warning(f"Доступные стадии: {[stage.value for stage in DialogueStage]}")
-            detection.stage = DialogueStage.GREETING.value
+            detection.stage = DialogueStage.MORNING.value
         
         return detection
     
@@ -72,7 +69,7 @@ class StageDetectorAgent(BaseAgent):
         """Парсинг ответа агента в StageDetection"""
         if not response:
             logger.warning("Пустой ответ от агента определения стадии")
-            return StageDetection(stage=DialogueStage.GREETING.value)
+            return StageDetection(stage=DialogueStage.MORNING.value)
         
         # Убираем лишние пробелы и переносы строк, приводим к нижнему регистру
         response_clean = response.strip().lower()
@@ -123,4 +120,4 @@ class StageDetectorAgent(BaseAgent):
         # Fallback
         logger.warning(f"Не удалось определить стадию из ответа: {response_clean}")
         logger.warning(f"Доступные стадии: {valid_stages}")
-        return StageDetection(stage=DialogueStage.GREETING.value)
+        return StageDetection(stage=DialogueStage.MORNING.value)
